@@ -1,0 +1,13 @@
+../Drivers/FreeRTOS/portable/GCC/ARM_CM4F/port.c:229:14:pxPortInitialiseStack	1
+../Drivers/FreeRTOS/portable/GCC/ARM_CM4F/port.c:259:13:prvTaskExitError	2
+../Drivers/FreeRTOS/portable/GCC/ARM_CM4F/port.c:273:6:SVC_Handler	1
+../Drivers/FreeRTOS/portable/GCC/ARM_CM4F/port.c:292:13:prvPortStartFirstTask	1
+../Drivers/FreeRTOS/portable/GCC/ARM_CM4F/port.c:312:12:xPortStartScheduler	4
+../Drivers/FreeRTOS/portable/GCC/ARM_CM4F/port.c:399:6:vPortEndScheduler	2
+../Drivers/FreeRTOS/portable/GCC/ARM_CM4F/port.c:407:6:vPortEnterCritical	3
+../Drivers/FreeRTOS/portable/GCC/ARM_CM4F/port.c:424:6:vPortExitCritical	3
+../Drivers/FreeRTOS/portable/GCC/ARM_CM4F/port.c:435:6:PendSV_Handler	1
+../Drivers/FreeRTOS/portable/GCC/ARM_CM4F/port.c:493:6:SysTick_Handler	2
+../Drivers/FreeRTOS/portable/GCC/ARM_CM4F/port.c:671:30:vPortSetupTimerInterrupt	1
+../Drivers/FreeRTOS/portable/GCC/ARM_CM4F/port.c:689:13:vPortEnableVFP	1
+../Drivers/FreeRTOS/portable/GCC/ARM_CM4F/port.c:705:7:vPortValidateInterruptPriority	4

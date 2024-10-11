@@ -1,0 +1,4 @@
+../Drivers/HAL/Src/LED_program.c:17:6:LED_voidInit	64	static
+../Drivers/HAL/Src/LED_program.c:57:6:LED_voidOn	16	static
+../Drivers/HAL/Src/LED_program.c:76:6:LED_voidOff	16	static
+../Drivers/HAL/Src/LED_program.c:95:6:LED_voidToggle	16	static
