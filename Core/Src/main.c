@@ -38,12 +38,13 @@ typedef enum {
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define GREEN_LIGHT_DURATION	6000
-#define YELLOW_LIGHT_DURATION	2000
-#define RED_LIGHT_DURATION		6000
-#define GREEN_LED_PIN			GPIO_PIN_3
-#define YELLOW_LED_PIN			GPIO_PIN_4
-#define RED_LED_PIN				GPIO_PIN_5
+#define GREEN_LIGHT_DURATION	60000
+#define YELLOW_LIGHT_DURATION	5000
+#define RED_LIGHT_DURATION		60000
+#define GREEN_LED_PIN			GPIO_PIN_11
+#define YELLOW_LED_PIN			GPIO_PIN_12
+#define RED_LED_PIN				GPIO_PIN_15
+#define LED_GPIO				GPIOA
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -54,14 +55,14 @@ typedef enum {
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+uint8_t seconds = 0;
 TrafficLightState_t currentState = GREEN;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-void vtaskempty(void *pvParameters);
+void vTrafficMultiplexTimer(void *pvParameters);
 void vTrafficLightTask(void *pvParameters);
 void vTrafficTimer(void *pvParameters);
 /* USER CODE END PFP */
@@ -101,12 +102,13 @@ int main(void)
 
   /* Initialize all configured peripherals */
   /* USER CODE BEGIN 2 */
-  LED_voidInit(GPIOB, GREEN_LED_PIN);
-  LED_voidInit(GPIOB, YELLOW_LED_PIN);
-  LED_voidInit(GPIOB, RED_LED_PIN);
+  LED_voidInit(LED_GPIO, GREEN_LED_PIN);
+  LED_voidInit(LED_GPIO, YELLOW_LED_PIN);
+  LED_voidInit(LED_GPIO, RED_LED_PIN);
   SSD_voidInit();
 
   //xTaskCreate(vtaskempty, "Traffic Light", configMINIMAL_STACK_SIZE, NULL, 2, NULL);
+  xTaskCreate(vTrafficMultiplexTimer, "Traffic Multiplex", configMINIMAL_STACK_SIZE, NULL, 3, NULL);
   xTaskCreate(vTrafficLightTask, "Traffic Light", configMINIMAL_STACK_SIZE, NULL, 2, NULL);
   xTaskCreate(vTrafficTimer, "Traffic Timer", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
 
@@ -167,56 +169,18 @@ void SystemClock_Config(void)
 
 /* USER CODE BEGIN 4 */
 
+void vTrafficMultiplexTimer(void *pvParameters){
+	while(1){
+		SSD_voidDisplayMultiplexedNumber(seconds);
+		vTaskDelay(pdMS_TO_TICKS(10));
+	}
 
+}
 void vTrafficTimer(void *pvParameters){
-	uint8_t max = 6;
-	uint8_t seconds = 0;
 	while (1){
 
-		switch (currentState) {
-			case GREEN:
-				max = GREEN_LIGHT_DURATION/1000;
-				if (seconds < max)
-				{
-					SSD_voidDisplayNumber(seconds, SSD_A);
-					seconds++;
-					vTaskDelay(pdMS_TO_TICKS(1000));
-				}
-				else{
-					seconds = 0;
-				}
-				break;
-
-			case YELLOW:
-				max = YELLOW_LIGHT_DURATION/1000;
-				if (seconds < max)
-				{
-					SSD_voidDisplayNumber(seconds, SSD_A);
-					seconds++;
-					vTaskDelay(pdMS_TO_TICKS(1000));
-				}
-				else{
-					seconds = 0;
-				}
-				break;
-
-			case RED:
-				max = RED_LIGHT_DURATION/1000;
-				if (seconds < max)
-				{
-					SSD_voidDisplayNumber(seconds, SSD_A);
-					seconds++;
-					vTaskDelay(pdMS_TO_TICKS(1000));
-				}
-				else{
-					seconds = 0;
-				}
-				break;
-
-			default:
-				seconds = 0;
-				break;
-		}
+		seconds++;
+		vTaskDelay(pdMS_TO_TICKS(1000));
 	}
 }
 
@@ -225,35 +189,35 @@ void vTrafficLightTask(void *pvParameters) {
 	while (1) {
 		switch (currentState) {
 			case GREEN:
-			LED_voidOn(GPIOA, GREEN_LED_PIN, LED_FORWARD_CONNECTION);
-			LED_voidOff(GPIOA, RED_LED_PIN, LED_FORWARD_CONNECTION);
-			LED_voidOff(GPIOA, YELLOW_LED_PIN, LED_FORWARD_CONNECTION);
+			LED_voidOn(LED_GPIO, GREEN_LED_PIN, LED_FORWARD_CONNECTION);
+			LED_voidOff(LED_GPIO, RED_LED_PIN, LED_FORWARD_CONNECTION);
+			LED_voidOff(LED_GPIO, YELLOW_LED_PIN, LED_FORWARD_CONNECTION);
 			vTaskDelay(pdMS_TO_TICKS(GREEN_LIGHT_DURATION));
 			currentState = RED;
-
+			seconds = 0;
 			break;
 
 			case YELLOW:
-				LED_voidOff(GPIOA, GREEN_LED_PIN, LED_FORWARD_CONNECTION);
-				LED_voidOff(GPIOA, RED_LED_PIN, LED_FORWARD_CONNECTION);
-				LED_voidOn(GPIOA, YELLOW_LED_PIN, LED_FORWARD_CONNECTION);
+				LED_voidOff(LED_GPIO, GREEN_LED_PIN, LED_FORWARD_CONNECTION);
+				LED_voidOff(LED_GPIO, RED_LED_PIN, LED_FORWARD_CONNECTION);
+				LED_voidOn(LED_GPIO, YELLOW_LED_PIN, LED_FORWARD_CONNECTION);
 				vTaskDelay(pdMS_TO_TICKS(YELLOW_LIGHT_DURATION));
 				currentState = GREEN;
-
+				seconds = 0;
 				break;
 
 			case RED:
-				LED_voidOff(GPIOA, GREEN_LED_PIN, LED_FORWARD_CONNECTION);
-				LED_voidOn(GPIOA, RED_LED_PIN, LED_FORWARD_CONNECTION);
-				LED_voidOff(GPIOA, YELLOW_LED_PIN, LED_FORWARD_CONNECTION);
+				LED_voidOff(LED_GPIO, GREEN_LED_PIN, LED_FORWARD_CONNECTION);
+				LED_voidOn(LED_GPIO, RED_LED_PIN, LED_FORWARD_CONNECTION);
+				LED_voidOff(LED_GPIO, YELLOW_LED_PIN, LED_FORWARD_CONNECTION);
 				vTaskDelay(pdMS_TO_TICKS(RED_LIGHT_DURATION));
 				currentState = YELLOW;
-
+				seconds = 0;
 				break;
 
 			default:
 				currentState = GREEN;
-
+				seconds = 0 - 1;
 				break;
 		}
 	}

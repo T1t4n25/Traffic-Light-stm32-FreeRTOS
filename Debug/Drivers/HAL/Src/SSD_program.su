@@ -1,3 +1,3 @@
-../Drivers/HAL/Src/SSD_program.c:31:6:SSD_voidInit	80	static
-../Drivers/HAL/Src/SSD_program.c:114:6:SSD_voidDisplayNumber	16	static
-../Drivers/HAL/Src/SSD_program.c:159:6:SSD_voidDisplayMultiplexedNumber	24	static
+../Drivers/HAL/Src/SSD_program.c:20:6:SSD_voidInit	80	static
+../Drivers/HAL/Src/SSD_program.c:103:6:SSD_voidDisplayNumber	16	static
+../Drivers/HAL/Src/SSD_program.c:176:6:SSD_voidDisplayMultiplexedNumber	24	static
