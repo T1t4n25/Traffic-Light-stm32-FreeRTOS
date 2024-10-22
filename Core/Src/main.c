@@ -38,13 +38,17 @@ typedef enum {
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define GREEN_LIGHT_DURATION	60000
-#define YELLOW_LIGHT_DURATION	5000
-#define RED_LIGHT_DURATION		60000
+#define GREEN_LIGHT_DURATION	6000
+#define YELLOW_LIGHT_DURATION	500
+#define RED_LIGHT_DURATION		6000
 #define GREEN_LED_PIN			GPIO_PIN_11
 #define YELLOW_LED_PIN			GPIO_PIN_12
 #define RED_LED_PIN				GPIO_PIN_15
 #define LED_GPIO				GPIOA
+#define MANUAL_MODE_PIN			GPIO_PIN_13
+#define RED_MODE_PIN			GPIO_PIN_14
+#define GREEN_MODE_PIN			GPIO_PIN_15
+#define MANUAL_MODE_PORT		GPIOC
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -57,11 +61,14 @@ typedef enum {
 /* USER CODE BEGIN PV */
 uint8_t seconds = 0;
 TrafficLightState_t currentState = GREEN;
+TaskHandle_t xTrafficLight, xTrafficTimer;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
+static void MX_GPIO_Init(void);
 /* USER CODE BEGIN PFP */
+void vManualModeTask(void *pvParameters);
 void vTrafficMultiplexTimer(void *pvParameters);
 void vTrafficLightTask(void *pvParameters);
 void vTrafficTimer(void *pvParameters);
@@ -101,16 +108,17 @@ int main(void)
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
+  MX_GPIO_Init();
   /* USER CODE BEGIN 2 */
   LED_voidInit(LED_GPIO, GREEN_LED_PIN);
   LED_voidInit(LED_GPIO, YELLOW_LED_PIN);
   LED_voidInit(LED_GPIO, RED_LED_PIN);
   SSD_voidInit();
 
-  //xTaskCreate(vtaskempty, "Traffic Light", configMINIMAL_STACK_SIZE, NULL, 2, NULL);
-  xTaskCreate(vTrafficMultiplexTimer, "Traffic Multiplex", configMINIMAL_STACK_SIZE, NULL, 3, NULL);
-  xTaskCreate(vTrafficLightTask, "Traffic Light", configMINIMAL_STACK_SIZE, NULL, 2, NULL);
-  xTaskCreate(vTrafficTimer, "Traffic Timer", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
+  xTaskCreate(vManualModeTask, "Manual Control", configMINIMAL_STACK_SIZE, NULL, 2, NULL);
+  xTaskCreate(vTrafficMultiplexTimer, "Traffic Multiplex", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
+  xTaskCreate(vTrafficLightTask, "Traffic Light", configMINIMAL_STACK_SIZE, NULL, 2, xTrafficLight);
+  xTaskCreate(vTrafficTimer, "Traffic Timer", configMINIMAL_STACK_SIZE, NULL, 1, xTrafficTimer);
 
   vTaskStartScheduler();
   /* USER CODE END 2 */
@@ -167,6 +175,30 @@ void SystemClock_Config(void)
   }
 }
 
+/**
+  * @brief GPIO Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_GPIO_Init(void)
+{
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
+/* USER CODE BEGIN MX_GPIO_Init_1 */
+/* USER CODE END MX_GPIO_Init_1 */
+
+  /* GPIO Ports Clock Enable */
+  __HAL_RCC_GPIOC_CLK_ENABLE();
+
+  /*Configure GPIO pins : PC13 PC14 PC15 */
+  GPIO_InitStruct.Pin = GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+/* USER CODE BEGIN MX_GPIO_Init_2 */
+/* USER CODE END MX_GPIO_Init_2 */
+}
+
 /* USER CODE BEGIN 4 */
 
 void vTrafficMultiplexTimer(void *pvParameters){
@@ -221,6 +253,50 @@ void vTrafficLightTask(void *pvParameters) {
 				break;
 		}
 	}
+}
+
+void vManualModeTask(void *pvParameters){
+	GPIO_PinState xMode = GPIO_PIN_RESET;
+	GPIO_PinState xRed = GPIO_PIN_RESET;
+	GPIO_PinState xGreen = GPIO_PIN_RESET;
+	//eTaskState xTrafficTimerState;
+	while(1){
+		xMode	= HAL_GPIO_ReadPin(MANUAL_MODE_PORT, MANUAL_MODE_PIN);
+		xRed 	= HAL_GPIO_ReadPin(MANUAL_MODE_PORT, RED_MODE_PIN);
+		xGreen	= HAL_GPIO_ReadPin(MANUAL_MODE_PORT, GREEN_MODE_PIN);
+		// Manual mode toggle off
+		if(xMode == GPIO_PIN_SET){
+			//vTaskSuspend(xTrafficTimer);
+			//vTaskSuspend(xTrafficLight);
+			if(xRed == GPIO_PIN_SET){
+				LED_voidOff(LED_GPIO, GREEN_LED_PIN, LED_FORWARD_CONNECTION);
+				LED_voidOn(LED_GPIO, RED_LED_PIN, LED_FORWARD_CONNECTION);
+				LED_voidOff(LED_GPIO, YELLOW_LED_PIN, LED_FORWARD_CONNECTION);
+			}
+			else if(xGreen == GPIO_PIN_SET){
+				LED_voidOn(LED_GPIO, GREEN_LED_PIN, LED_FORWARD_CONNECTION);
+				LED_voidOff(LED_GPIO, RED_LED_PIN, LED_FORWARD_CONNECTION);
+				LED_voidOff(LED_GPIO, YELLOW_LED_PIN, LED_FORWARD_CONNECTION);
+			}
+			else{
+				LED_voidOff(LED_GPIO, GREEN_LED_PIN, LED_FORWARD_CONNECTION);
+				LED_voidOff(LED_GPIO, RED_LED_PIN, LED_FORWARD_CONNECTION);
+				LED_voidOff(LED_GPIO, YELLOW_LED_PIN, LED_FORWARD_CONNECTION);
+			}
+		}
+		else{
+			if(eTaskGetState(xTrafficTimer) == eSuspended){
+				vTaskResume(xTrafficTimer);
+				vTaskResume(xTrafficLight);
+			}
+			else{
+				//do nothing
+			}
+
+		}
+		vTaskDelay(pdMS_TO_TICKS(200));
+	}
+
 }
 /* USER CODE END 4 */
 
