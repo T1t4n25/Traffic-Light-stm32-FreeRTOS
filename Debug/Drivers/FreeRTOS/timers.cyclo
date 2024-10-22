@@ -1,5 +1,6 @@
-../Drivers/FreeRTOS/timers.c:259:12:xTimerCreateTimerTask	3
+../Drivers/FreeRTOS/timers.c:259:12:xTimerCreateTimerTask	4
 ../Drivers/FreeRTOS/timers.c:314:16:xTimerCreate	2
+../Drivers/FreeRTOS/timers.c:346:16:xTimerCreateStatic	4
 ../Drivers/FreeRTOS/timers.c:388:13:prvInitialiseNewTimer	3
 ../Drivers/FreeRTOS/timers.c:417:12:xTimerGenericCommand	5
 ../Drivers/FreeRTOS/timers.c:460:14:xTimerGetTimerDaemonTaskHandle	2
@@ -8,13 +9,15 @@
 ../Drivers/FreeRTOS/timers.c:489:14:pcTimerGetName	2
 ../Drivers/FreeRTOS/timers.c:498:13:prvProcessExpiredTimer	4
 ../Drivers/FreeRTOS/timers.c:538:13:prvTimerTask	1
-../Drivers/FreeRTOS/timers.c:574:13:prvProcessTimerOrBlockTask	6
-../Drivers/FreeRTOS/timers.c:634:19:prvGetNextExpireTime	2
+../Drivers/FreeRTOS/timers.c:574:13:prvProcessTimerOrBlockTask	7
+../Drivers/FreeRTOS/timers.c:634:19:prvGetNextExpireTime	3
 ../Drivers/FreeRTOS/timers.c:660:19:prvSampleTimeNow	2
 ../Drivers/FreeRTOS/timers.c:683:19:prvInsertTimerInActiveList	5
-../Drivers/FreeRTOS/timers.c:724:13:prvProcessReceivedCommands	11
+../Drivers/FreeRTOS/timers.c:724:13:prvProcessReceivedCommands	14
 ../Drivers/FreeRTOS/timers.c:871:13:prvSwitchTimerLists	5
 ../Drivers/FreeRTOS/timers.c:930:13:prvCheckForValidListAndQueue	3
 ../Drivers/FreeRTOS/timers.c:981:12:xTimerIsTimerActive	2
 ../Drivers/FreeRTOS/timers.c:1002:7:pvTimerGetTimerID	2
 ../Drivers/FreeRTOS/timers.c:1019:6:vTimerSetTimerID	2
+../Drivers/FreeRTOS/timers.c:1035:13:xTimerPendFunctionCallFromISR	1
+../Drivers/FreeRTOS/timers.c:1059:13:xTimerPendFunctionCall	2

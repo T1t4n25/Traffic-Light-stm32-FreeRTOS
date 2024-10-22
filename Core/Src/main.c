@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "cmsis_os.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -57,6 +58,7 @@ typedef enum {
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+/* Definitions for defaultTask */
 
 /* USER CODE BEGIN PV */
 uint8_t seconds = 0;
@@ -67,6 +69,8 @@ TaskHandle_t xTrafficLight, xTrafficTimer;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
+void StartDefaultTask(void *argument);
+
 /* USER CODE BEGIN PFP */
 void vManualModeTask(void *pvParameters);
 void vTrafficMultiplexTimer(void *pvParameters);
@@ -115,13 +119,46 @@ int main(void)
   LED_voidInit(LED_GPIO, RED_LED_PIN);
   SSD_voidInit();
 
-  xTaskCreate(vManualModeTask, "Manual Control", configMINIMAL_STACK_SIZE, NULL, 2, NULL);
-  xTaskCreate(vTrafficMultiplexTimer, "Traffic Multiplex", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
+  xTaskCreate(vTrafficMultiplexTimer, "Traffic Multiplex", configMINIMAL_STACK_SIZE, NULL, 3, NULL);
   xTaskCreate(vTrafficLightTask, "Traffic Light", configMINIMAL_STACK_SIZE, NULL, 2, xTrafficLight);
   xTaskCreate(vTrafficTimer, "Traffic Timer", configMINIMAL_STACK_SIZE, NULL, 1, xTrafficTimer);
+  xTaskCreate(vManualModeTask, "Manual Control", configMINIMAL_STACK_SIZE, NULL, 4, NULL);
 
   vTaskStartScheduler();
   /* USER CODE END 2 */
+
+  /* Init scheduler */
+
+  /* USER CODE BEGIN RTOS_MUTEX */
+  /* add mutexes, ... */
+  /* USER CODE END RTOS_MUTEX */
+
+  /* USER CODE BEGIN RTOS_SEMAPHORES */
+  /* add semaphores, ... */
+  /* USER CODE END RTOS_SEMAPHORES */
+
+  /* USER CODE BEGIN RTOS_TIMERS */
+  /* start timers, add new ones, ... */
+  /* USER CODE END RTOS_TIMERS */
+
+  /* USER CODE BEGIN RTOS_QUEUES */
+  /* add queues, ... */
+  /* USER CODE END RTOS_QUEUES */
+
+  /* Create the thread(s) */
+  /* creation of defaultTask */
+
+  /* USER CODE BEGIN RTOS_THREADS */
+  /* add threads, ... */
+  /* USER CODE END RTOS_THREADS */
+
+  /* USER CODE BEGIN RTOS_EVENTS */
+  /* add events, ... */
+  /* USER CODE END RTOS_EVENTS */
+
+  /* Start scheduler */
+
+  /* We should never get here as control is now taken by the scheduler */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
@@ -266,8 +303,8 @@ void vManualModeTask(void *pvParameters){
 		xGreen	= HAL_GPIO_ReadPin(MANUAL_MODE_PORT, GREEN_MODE_PIN);
 		// Manual mode toggle off
 		if(xMode == GPIO_PIN_SET){
-			//vTaskSuspend(xTrafficTimer);
-			//vTaskSuspend(xTrafficLight);
+			vTaskSuspend(xTrafficTimer);
+			vTaskSuspend(xTrafficLight);
 			if(xRed == GPIO_PIN_SET){
 				LED_voidOff(LED_GPIO, GREEN_LED_PIN, LED_FORWARD_CONNECTION);
 				LED_voidOn(LED_GPIO, RED_LED_PIN, LED_FORWARD_CONNECTION);
@@ -294,11 +331,19 @@ void vManualModeTask(void *pvParameters){
 			}
 
 		}
-		vTaskDelay(pdMS_TO_TICKS(200));
+		vTaskDelay(pdMS_TO_TICKS(50));
 	}
 
 }
 /* USER CODE END 4 */
+
+/* USER CODE BEGIN Header_StartDefaultTask */
+/**
+  * @brief  Function implementing the defaultTask thread.
+  * @param  argument: Not used
+  * @retval None
+  */
+/* USER CODE END Header_StartDefaultTask */
 
 /**
   * @brief  Period elapsed callback in non blocking mode

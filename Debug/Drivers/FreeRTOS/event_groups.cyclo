@@ -1,11 +1,14 @@
+../Drivers/FreeRTOS/event_groups.c:135:21:xEventGroupCreateStatic	3
 ../Drivers/FreeRTOS/event_groups.c:174:21:xEventGroupCreate	2
 ../Drivers/FreeRTOS/event_groups.c:208:13:xEventGroupSync	12
 ../Drivers/FreeRTOS/event_groups.c:324:13:xEventGroupWaitBits	17
 ../Drivers/FreeRTOS/event_groups.c:472:13:xEventGroupClearBits	3
+../Drivers/FreeRTOS/event_groups.c:501:13:xEventGroupClearBitsFromISR	1
 ../Drivers/FreeRTOS/event_groups.c:514:13:xEventGroupGetBitsFromISR	1
 ../Drivers/FreeRTOS/event_groups.c:530:13:xEventGroupSetBits	9
-../Drivers/FreeRTOS/event_groups.c:624:6:vEventGroupDelete	3
+../Drivers/FreeRTOS/event_groups.c:624:6:vEventGroupDelete	4
 ../Drivers/FreeRTOS/event_groups.c:668:6:vEventGroupSetBitsCallback	1
 ../Drivers/FreeRTOS/event_groups.c:676:6:vEventGroupClearBitsCallback	1
 ../Drivers/FreeRTOS/event_groups.c:682:19:prvTestWaitCondition	4
+../Drivers/FreeRTOS/event_groups.c:719:13:xEventGroupSetBitsFromISR	1
 ../Drivers/FreeRTOS/event_groups.c:734:14:uxEventGroupGetNumber	2

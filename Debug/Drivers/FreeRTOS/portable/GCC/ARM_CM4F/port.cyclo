@@ -7,7 +7,7 @@
 ../Drivers/FreeRTOS/portable/GCC/ARM_CM4F/port.c:407:6:vPortEnterCritical	3
 ../Drivers/FreeRTOS/portable/GCC/ARM_CM4F/port.c:424:6:vPortExitCritical	3
 ../Drivers/FreeRTOS/portable/GCC/ARM_CM4F/port.c:435:6:PendSV_Handler	1
-../Drivers/FreeRTOS/portable/GCC/ARM_CM4F/port.c:493:6:SysTick_Handler	2
+../Drivers/FreeRTOS/portable/GCC/ARM_CM4F/port.c:493:6:xPortSysTickHandler	2
 ../Drivers/FreeRTOS/portable/GCC/ARM_CM4F/port.c:671:30:vPortSetupTimerInterrupt	1
 ../Drivers/FreeRTOS/portable/GCC/ARM_CM4F/port.c:689:13:vPortEnableVFP	1
 ../Drivers/FreeRTOS/portable/GCC/ARM_CM4F/port.c:705:7:vPortValidateInterruptPriority	4
